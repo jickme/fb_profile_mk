@@ -1,0 +1,104 @@
+~ Treo nick online 24/24 bằng cokie
+
+~Hệ thông auto tương tác
+	-Tùy chọn thả tim, like,vv....
+	-Tùy chọn tương tác với nam hoặc nữ ( lọc không cho tương tác với nhóm và page )
+	-Tùy chọn tương tác với tất cả
+	-tùy chọn tương tác cả nam và nữ ( lọc không cho tương tác với nhóm và page )
+	có lịch hẹn giờ ví sẽ không bình luận vào nick đó
+	hiển thị số stt đã tương tác trong ngày
+	Nếu có thể thì thêm bộ lọc phát hiện spam và cho tạm dừng dịch vụ
+~ bình luận tương tác
+	-Tùy chọn bình luận cả nam hoặc nữ ( lọc không cho bình luận với nhóm và page )
+	-Tùy chọn bình luận với tất cả
+	-tùy chọn bình luận cả nam và nữ ( lọc không cho bình luận với nhóm và page )
+	-Có mục kèm bình luận thêm ảnh, và được thêm nhiều bình luận khác nhau
+	có nhận diện bình luận ( tên người mà stt bình luận, VD: chào .... hãy tương tác mình thường xuyên nhé )
+	có lịch hẹn giờ ví dụ từ 6h đến 23h
+	có thể thêm nhiều bình luận
+	thêm phần thêm id để không bình luận vào nick đó
+	Nếu có thể thì thêm bộ lọc phát hiện spam và cho tạm dừng dịch vụ
+	hiển thị số lần đã bình luận tương tác trong ngày
+	ví dụ khi bình luận: Chào ( Đức Lộc ) chúc buổi tối vui vẻ
+
+~ HỆ thống marketing
+	-Tạo lịch đăng bài tự động theo chuẩn thời gian có bảng lịch và thời gian cài đặt ( có thể thêm nhiều lịch )
+	Hỗi trợ đầy đủ như post trên facebook vd: ảnh, stt, video ( có bảng icon facebook để chọn sẵn khi viết tus)
+	Hỗ trợ đăng bài lên nhóm và chia sẻ lên nhóm ( Hiển thị sẵn list nhóm đã tham gia )
+	-Coppy bài đăng của người khác, có hỗ trơ page. hỗ trợ tùy chỉnh thời gian theo ý muốn, nếu ko điều chỉnh đc thì copy bài mới nhất ( có thể copy nhiều của các nick face khác nhau )
+	- Ckeck lượt page đã thích ( Có code bỏ thích ) đều xuất được file và xóa nhanh bằng javascrip
+	- Ckeck những người đã theo dõi ( Có code xóa follow ) đều xuất được file và xóa nhanh bằng javascrip
+	- Ckeck id stt bất kỳ để lấy id và kết bạn ( có code kết bạn ) có lựa chọn lọc lấy id nam hoặc nữ và tất cả đều xuất được file và làm nhanh bằng javascrip
+---------------------------------
+Hiển thị thông tin token và cokie còn hoạt động hoặc đã bị chết
+Có panel dành riêng cho mỗi cấp bậc quản lý
+Hiển thị tình trạng sever như RAM CPU, lượt truy cập, thành viên, thêm số % quá tải sever nếu có thể
+Có mục Nạp tiền. thanh toán bằng thẻ cào nhưng khi khách nạp vào thẻ sẽ chuyển sang tin nhắn trên hệ thống của admin. khi admin xác nhận thẻ hợp lệ thì mới cộng tiền.( có ghi thông tin ngân hàng )
+
+Có chỗ hiển thị bảng giá và do admin điều chỉnh
+Hiển thị mục thông báo và gửi báo cáo để giúp admin và thành viên thông báo tình trạng dễ hơn
+Thêm mục login để lấy token và cokie
+Tất cả đều login băng facebook cho tiện lợi
+Lâm có thể giúp mình chỉ cần get token hoặc cokie 1 lần là sử dụng đc tất cả dịch vụ
+Hiện thông tin live và die của token + Cokie cho tài khoản
+Thêm mục hướng dẫn sử dụng
+Dễ sử dụng trên cả app google của smart phone vì khách mình chủ yếu là smart phone
+---------------------------------------
+Hệ thống thanh toán
+thêm tất cả dịch vụ bằng số lần kích hoạt sử dụng
+Mọi hoạt động thanh toán hay kích hoạt đều được lưu log lại và admin có thể xem
+mã thẻ khách nạp và seri sẽ được lưu trữ trong mục hệ thống cho admin có thể xem
+Tất cả những gì hoạt động của sever đều bị lưu lại và chỉ admin và quản lý có thể xem ( Riêng chỉ admin mới có quyền xóa lịch sử hoạt động ) ( mục thanh toán thẻ nạp thì chỉ admin mới có thể xem được thông tin mã thẻ )
+Khi Hết hạn hàng tháng hệ thống sẽ dừng lại và báo cho admin trong 3 đến 4 ngày trc khi tự xóa thành viên khỏi dịch vụ
+Thêm mục BAN id mà mình muốn chặn không cho tham gia
+
+~ Các chữ vụ dành riêng cho quản lý hệ thống
+- Admin được toàn quyền điều khiển hệ thống
+-Quản lý hệ thống
++ ĐƯợc toàn quyền như admin nhưng không được quyền chuyển tiền của hệ thống
+- CỘng tác viên
+Được quản lý nhiều khách hàng 
+
+- Khách hàng 
+
+Nếu có thể bạn có thể dùng apps login lấy token full quyền và nạp tự động vào hệ thống mỗi khi khách hàng login vào hệ thống. thì hệ thống sẽ tự thêm token mới và xóa token cũ đi
+
+
+
+
+---------------------------------
+Hiển thị thông tin token và cokie còn hoạt động hoặc đã bị chết
+Có panel dành riêng cho mỗi cấp bậc quản lý
+Hiển thị tình trạng sever như RAM CPU, lượt truy cập, thành viên, thêm số % quá tải sever nếu có thể
+Có mục Nạp tiền. thanh toán bằng thẻ cào nhưng khi khách nạp vào thẻ sẽ chuyển sang tin nhắn trên hệ thống của admin. khi admin xác nhận thẻ hợp lệ thì mới cộng tiền.( có ghi thông tin ngân hàng )
+
+Có chỗ hiển thị bảng giá và do admin điều chỉnh
+Hiển thị mục thông báo và gửi báo cáo để giúp admin và thành viên thông báo tình trạng dễ hơn
+Thêm mục login để lấy token và cokie
+Tất cả đều login băng facebook cho tiện lợi
+Lâm có thể giúp mình chỉ cần get token hoặc cokie 1 lần là sử dụng đc tất cả dịch vụ
+Hiện thông tin live và die của token + Cokie cho tài khoản
+Thêm mục hướng dẫn sử dụng
+Dễ sử dụng trên cả app google của smart phone vì khách mình chủ yếu là smart phone
+---------------------------------------
+Hệ thống thanh toán
+thêm tất cả dịch vụ bằng số lần kích hoạt sử dụng
+Mọi hoạt động thanh toán hay kích hoạt đều được lưu log lại và admin có thể xem
+mã thẻ khách nạp và seri sẽ được lưu trữ trong mục hệ thống cho admin có thể xem
+Tất cả những gì hoạt động của sever đều bị lưu lại và chỉ admin và quản lý có thể xem ( Riêng chỉ admin mới có quyền xóa lịch sử hoạt động ) ( mục thanh toán thẻ nạp thì chỉ admin mới có thể xem được thông tin mã thẻ )
+Khi Hết hạn hàng tháng hệ thống sẽ dừng lại và báo cho admin trong 3 đến 4 ngày trc khi tự xóa thành viên khỏi dịch vụ
+Thêm mục BAN id mà mình muốn chặn không cho tham gia
+
+~ Các chữ vụ dành riêng cho quản lý hệ thống
+- Admin được toàn quyền điều khiển hệ thống
+-Quản lý hệ thống
++ ĐƯợc toàn quyền như admin nhưng không được quyền chuyển tiền của hệ thống
+- CỘng tác viên
+Được quản lý nhiều khách hàng 
+
+- Khách hàng 
+
+Nếu có thể bạn có thể dùng apps login lấy token full quyền và nạp tự động vào hệ thống mỗi khi khách hàng login vào hệ thống. thì hệ thống sẽ tự thêm token mới và xóa token cũ đi
+
+
+
