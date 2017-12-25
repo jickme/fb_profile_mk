@@ -575,8 +575,105 @@ class Member extends CI_Controller
 		}
 		if($this->input->get('edit_cmt') != ''){
 			$id_table = (int)$this->input->get('edit_cmt');
+			$hiha = (int)$this->input->get('edit_cmt');
 			if($this->m_func->check_user_creat('bot_cmt', $_SESSION['id'], $id_table)){
 
+				if($this->input->post('get_json_oki') != ''){
+					$id_table = (int)$this->input->post('get_json_oki');
+					if($this->m_botcmt->check_with_id_cmt($id_table, $_SESSION['id'])){
+						$this->db->where('id', $id_table);
+						$ok = $this->db->get('comments');
+						$hi = $ok->result_array();
+						echo json_encode($hi[0]);
+					}
+					exit;
+				}
+				if($this->input->post('add_cmt_submit') != ''){
+					$idfb = $this->m_botcmt->get_fbid($hiha);
+					if($this->m_botcmt->check_luot($idfb)){
+
+						$this->form_validation->set_rules('message', 'Nội dung', 'required|xss_clean');
+						$this->form_validation->set_rules('image', 'Hình ảnh', 'xss_clean|max_length[255]');
+
+						if($this->form_validation->run()){
+							$data_ins = array(
+								'idbot' => $idfb,
+								'message' => $this->input->post('message'),
+								'image' => $this->input->post('image'),
+								'time_update' => time()
+							);
+							$this->db->where('id', $id_table);
+							if($this->db->insert('comments', $data_ins)){
+								$arr = array(
+									'type' => 'success',
+									'mess' => 'Đã thêm thành công 1 bình luận'
+								);
+							}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => 'Không thể thêm bình luận'
+								);
+							}
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => validation_errors()
+							);
+						}
+
+
+					}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => 'Chỉ được tối đa 5 bình luận.'
+								);
+					}
+					echo json_encode($arr);
+					exit;
+
+				}
+				if($this->input->post('trideptraiid') != ''){
+					$id_table = (int)$this->input->post('trideptraiid');
+					if($this->m_botcmt->check_with_id_cmt($id_table, $_SESSION['id'])){
+
+						$this->form_validation->set_rules('message', 'Nội dung', 'required|xss_clean');
+						$this->form_validation->set_rules('image', 'Hình ảnh', 'xss_clean|max_length[255]');
+						if($this->form_validation->run()){
+							$data_up = array(
+								'message' => $this->input->post('message'),
+								'image' => $this->input->post('image'),
+								'time_update' => time()
+							);
+							$this->db->where('id', $id_table);
+							if($this->db->update('comments', $data_up)){
+								$arr = array(
+									'type' => 'success',
+									'mess' => 'Cập nhật thành công'
+								);
+							}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => 'Không thể cập nhật'
+								);
+							}
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => validation_errors()
+							);
+						}
+
+
+					}else{
+						$arr = array(
+							'type' => 'warning',
+							'mess' => 'Comment này không còn khả dụng'
+						);
+					}
+					echo json_encode($arr);
+					exit;
+
+				}
 				if($this->input->post('delete_comment') != ''){
 					$id_table = (int)$this->input->post('delete_comment');
 					if($this->m_botcmt->check_with_id_cmt($id_table, $_SESSION['id'])){

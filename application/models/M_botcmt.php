@@ -14,6 +14,15 @@ class M_botcmt extends CI_Model
 		$ok = $bg->result_array();
 		return $ok[0]['fb_id'];
 	}
+	function check_luot($fbid){
+		$this->db->where('idbot', $fbid);
+		$ok = $this->db->get('comments');
+		if($ok->num_rows() >= 5){
+			return false;
+		}else{
+			return true;
+		}
+	}
 	function get_comment($id){
 		$fb_id = $this->get_fbid($id);
 		$this->db->where('idbot', $fb_id);

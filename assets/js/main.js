@@ -356,3 +356,116 @@ function delete_comment(id){
       return false;
   }
 }
+//Edit Comment
+function edit_comment(id){
+
+  $(':button[onclick="edit_comment('+id+')"]').prop('disabled', true);
+  $.post('', {get_json_oki: id}).done(function(data){
+    var a = jQuery.parseJSON(data);
+    console.log(a);
+    if(a.image == ''){
+      var lol = '<div id="anh_modal"> <p class="text-muted">Không có ảnh</p></div><br><a onclick="change_img()" id="change_img" href="#">Thêm ảnh</a> <div id="delete_bt" style="display: none;"><a href="#" class="text-danger" onclick="delete_img()">Xóa ảnh</a></div><input type="hidden" name="image" value="" id="paste_here">';
+    }else{
+      var lol = '<div id="anh_modal"> <label>* Ảnh kèm theo: </label><br><img src="'+a.image+'" width="100px"> </div><br><a onclick="change_img()" id="change_img" href="#">Thay đổi ảnh</a> <div id="delete_bt"><a href="#" class="text-danger" onclick="delete_img()">Xóa ảnh</a></div><input type="hidden" name="image" value="'+a.image+'" id="paste_here"> ';
+    }
+    $('#trideptrai').html('<div id="edit_cmt_modal" class="modal fade" role="dialog"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal">&times;</button> <h4 class="modal-title">Chỉnh sửa comment</h4> </div><div class="modal-body"> <form id="nd_cmt"> <div class="form-group"> <label>* Nội dung comment: </label> <textarea class="form-control" rows="3" placeholder="Điền nội dung comment vào đây..." name="message">'+a.message+'</textarea> </div><center> <div class="form-group"> '+lol+' <input type="hidden" name="trideptraiid" value="'+a.id+'"> </div></center> </form> </div><div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Close</button> <button type="button" class="btn btn-primary" onclick="submit_cmt()">Lưu thay đổi</button> </div></div></div></div>');
+    $('#edit_cmt_modal').modal('show');
+      $(':button[onclick="edit_comment('+id+')"]').prop('disabled', false);
+  }).fail(function(){
+     toastr["warning"]("<b>Lỗi hệ thống !</b>");
+     $(':button[onclick="edit_comment('+id+')"]').prop('disabled', false);
+  });
+  //  
+
+}
+function change_img(){
+   $('#change_img_hi').click();
+}
+
+$("#change_img_hi").change(function(){
+    var a = $(this).val();
+    if(a!= ''){
+        console.log(a);
+        var file = this.files[0];
+        var imagefile = file.type;
+        var match = ["image/jpeg", "image/png", "image/jpg"];
+        if (!((imagefile == match[0]) || (imagefile == match[1]) || (imagefile == match[2]))) {
+            toastr["warning"]("<b>Bạn chỉ có thể tải lên hình ảnh.</b>");
+            return false;
+        } else {
+            $("#change_photo_submit").submit();
+            $("#change_img").html('<i class="fa fa-spinner fa-pulse"></i> Đang tải lên...').prop('disabled', true);
+        }
+    }
+});
+
+$("#change_photo_submit").on('submit',(function(e){
+    e.preventDefault();
+    $.ajax({
+      url: "",
+      type: "POST",
+      data:  new FormData(this),
+      contentType: false,
+      cache: false,
+      processData:false,
+      success: function(data){
+          if(data == 'error') {
+             toastr["warning"]("<b>Lỗi khi tải lên. Thử lại sau!</b>");
+          }else{
+            $("#anh_modal").html('<label>* Ảnh kèm theo: </label><br><img src="'+data+'" width="100px"> ');
+            $("#change_img").html('Thay đổi ảnh');
+            $(':input[name="image"]').val(data);
+            $('#delete_bt').show();
+          }
+      },
+      error: function(){
+        console.log('Loi');
+      }           
+    });
+}));
+function delete_img(){
+  $('#anh_modal').html('<p class="text-muted">Không có ảnh</p>');
+  $('#linkanh').val('');
+  $('#delete_bt').hide();
+  $('#change_img').html('Thêm ảnh');
+}
+function submit_cmt(){
+
+  $(':input[onclick="submit_cmt()"]').prop('disabled', true).html('<i class="fa fa-spinner fa-spin fa-fw"></i> Đang xử lý');
+  $.post('', $('#nd_cmt').serialize()).done(function(data){
+      console.log(data);
+      var a = jQuery.parseJSON(data);
+      toastr[a.type](a.mess);
+      if(a.type == 'success'){
+        $('#edit_model').modal('toggle');
+        setTimeout(function(){
+          location.reload();
+        }, 1000);
+      }
+    }).fail(function(){
+        toastr["warning"]("<b>Lỗi</b>");
+    }).always(function(){
+      $(':input[onclick="submit_cmt()"]').prop('disabled', false).html('Lưu thay đổi');
+    });
+
+}
+function add_cmt_submit(){
+  
+  $(':input[onclick="add_cmt_submit()"]').prop('disabled', true).html('<i class="fa fa-spinner fa-spin fa-fw"></i> Đang xử lý');
+  $.post('', $('#add_cmt_form').serialize()).done(function(data){
+      console.log(data);
+      var a = jQuery.parseJSON(data);
+      toastr[a.type](a.mess);
+      if(a.type == 'success'){
+        $('#edit_model').modal('toggle');
+        setTimeout(function(){
+          location.reload();
+        }, 1000);
+      }
+    }).fail(function(){
+        toastr["warning"]("<b>Lỗi</b>");
+    }).always(function(){
+      $(':input[onclick="add_cmt_submit()"]').prop('disabled', false).html('Lưu thay đổi');
+    });
+
+}
