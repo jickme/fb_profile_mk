@@ -8,7 +8,35 @@ class M_func extends CI_Model
 	{
 		parent::__construct();
 	}
-
+	function graph_fb($url){
+	    $ch = @curl_init();
+	    curl_setopt($ch, CURLOPT_URL, 'https://graph.facebook.com/'.$url.'');
+	    curl_setopt($ch, CURLOPT_ENCODING, '');
+	    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+	    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+	    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+	    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
+	    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+	    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+	        'Expect:'
+	    ));
+	    $page = curl_exec($ch);
+	    curl_close($ch);
+	    return $page;
+	}
+	function check_token_live($token){
+		$check = json_decode($this->graph_fb('me?method=GET&access_token='.$token.''), true);
+		if(isset($check['id'])){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	function get_info_token($token){
+		return json_decode($this->graph_fb('me?method=GET&access_token='.$token.''), true);
+	}
+	
 	public function curl_url_cookie($url,$cookie, $browser = 'Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14'){
 	    $ch = @curl_init();
 	    curl_setopt($ch, CURLOPT_URL, $url);

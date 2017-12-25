@@ -8,6 +8,56 @@ class M_botcmt extends CI_Model
 	{
 		parent::__construct();
 	}
+	function get_fbid($id){
+		$this->db->where('id', $id);
+		$bg = $this->db->get('bot_cmt');
+		$ok = $bg->result_array();
+		return $ok[0]['fb_id'];
+	}
+	function get_comment($id){
+		$fb_id = $this->get_fbid($id);
+		$this->db->where('idbot', $fb_id);
+		$ok = $this->db->get('comments');
+		return $ok->result_array();
+	}
+	function get_fbid_nd($id){
+		$this->db->where('id', $id);
+		$bg = $this->db->get('comments');
+		$ok = $bg->result_array();
+		if(isset($ok[0]['idbot'])){
+			return $ok[0]['idbot'];
+		}else{
+			return false;
+		}	
+	}
+	function check_useradd_with_fb_id($fbid, $user_add){
+		$this->db->where('fb_id', $fbid);
+		$this->db->where('user_creat', $user_add);
+		$ok = $this->db->get('bot_cmt');
+		if($ok->num_rows() > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	function check_with_id_cmt($id_cmt, $user_creat){
+		$fbid = $this->get_fbid_nd($id_cmt);
+		if($fbid == false){
+			return false;
+		}else{
+			return $this->check_useradd_with_fb_id($fbid, $user_creat);
+		}
+	}
+	function get_tuongtac($page){
+		$this->db->where('user_creat', $_SESSION['id']);
+		$query = $this->db->get('bot_cmt', 5, $page);
+		return $query->result_array();
+	}
+	function num_rows_tuongtac($id){
+		$this->db->where('user_creat', $id);
+		$this->db->from('bot_cmt');
+		return $this->db->count_all_results();
+	}
 	function form_val($hi = ''){
 		$this->form_validation->set_rules('access_token', 'Token', 'required|xss_clean|min_length[10]');
 		$this->form_validation->set_rules('note', 'Note', 'xss_clean|max_length[50]');

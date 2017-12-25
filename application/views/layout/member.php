@@ -155,8 +155,8 @@ if($info['active'] == '1'){
                             <li class="has_sub">
                                 <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-database" aria-hidden="true"></i> <span> Auto bình luận</span> <span class="menu-arrow"></span></a>
                                 <ul class="list-unstyled">
-                                   <li><a href="<?=base_url()?>Member/BotComment">Cài đặt Auto bình luận</a></li>
-                                    <li><a href="<?=base_url()?>Member/BotComment">Quản lý Auto bình luận</a></li>
+                                   <li><a href="<?=base_url()?>Member/QuanLyBotComment">Cài đặt Auto bình luận</a></li>
+                                   <li><a href="<?=base_url()?>Member/QuanLyBotComment">Quản lý Auto bình luận</a></li>
                                 </ul>
                             </li>
                             <li>

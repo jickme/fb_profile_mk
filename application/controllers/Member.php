@@ -30,10 +30,10 @@ class Member extends CI_Controller
 									echo json_encode($arr);
 									exit;
 				}
-				if($this->m_tuongtac->check_token_live($this->input->post('access_token'))){
+				if($this->m_func->check_token_live($this->input->post('access_token'))){
 					$thanh_tien = $this->m_func->get_gia('bot_cx') * $this->input->post('ngay_cai');
 					if($this->m_func->check_money($thanh_tien, $_SESSION['id'])){
-						$info_token = $this->m_tuongtac->get_info_token($this->input->post('access_token'));
+						$info_token = $this->m_func->get_info_token($this->input->post('access_token'));
 						if(isset($info_token['id'])){
 							if($this->m_tuongtac->check_isset_db($info_token['id'])){
 
@@ -160,8 +160,8 @@ class Member extends CI_Controller
 											exit;
 						}
 						/*Check Live id*/
-						if($this->m_tuongtac->check_token_live($this->input->post('access_token'))){
-							$info_token = $this->m_tuongtac->get_info_token($this->input->post('access_token'));
+						if($this->m_func->check_token_live($this->input->post('access_token'))){
+							$info_token = $this->m_func->get_info_token($this->input->post('access_token'));
 							if(isset($info_token['id'])){
 								if($info_token['id']  == $this->m_tuongtac->get_fbid($id_table)){
 
@@ -234,7 +234,7 @@ class Member extends CI_Controller
 
 		$this->load->library('pagination');
         $config = $this->config->item('pagination'); 
-        $config['base_url'] = base_url('Member/QuanLyTreoNick');
+        $config['base_url'] = base_url('Member/QuanLyAutoTuongTac');
         $config['total_rows'] = $this->m_tuongtac->num_rows_tuongtac($_SESSION['id']);
         $config['per_page'] = 5;                         
         
@@ -452,12 +452,213 @@ class Member extends CI_Controller
 
 		$this->load->view('layout/member', $data);
 	}
+	function QuanLyBotComment(){
+
+		$this->load->model('m_botcmt');
+		settype($page, 'int');
+		if($this->input->post('delete_table') != ''){
+			$id_table = $this->input->post('delete_table');
+			settype($id_table, 'int');
+			if($this->m_func->check_user_creat('bot_cmt', $_SESSION['id'], $id_table)){
+				$this->db->where('id', $id_table);
+				if($this->db->delete('bot_cmt')){
+							$arr = array(
+								'type' => 'success',
+								'mess' => 'Đã xóa thành công'
+							);
+				}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Không thể xóa id này do lỗi'
+							);
+				}
+
+			}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Bạn không thể xóa id của người khác'
+							);
+			}
+			echo json_encode($arr);
+			exit;
+		}
+		if($this->input->post('get_json_edit') != ''){
+			$id_table = $this->input->post('get_json_edit');
+			settype($id_table, 'int');
+			if($this->m_func->check_user_creat('bot_cmt', $_SESSION['id'], $id_table)){
+				$this->db->where('id', $id_table);
+				$ok = $this->db->get('bot_cmt');
+				$hi = $ok->result_array();
+				echo json_encode($hi[0]);
+				exit;
+			}
+		}
+		if($this->input->post('edit_id') != ''){
+			$id_table = $this->input->post('edit_id');settype($id_table, 'int');
+			if($this->m_func->check_user_creat('bot_cmt', $_SESSION['id'], $id_table)){
+				if($this->m_botcmt->form_val('edit_id') == true){
+					$thanh_tien = $this->input->post('gia_han') * $this->m_func->get_gia('bot_cmt');
+					if($this->m_func->check_money($thanh_tien, $_SESSION['id'])){
+						if($this->input->post('h_start') >= $this->input->post('h_end')){
+											$arr = array(
+												'type' => 'warning',
+												'mess' => 'Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc'
+											);
+											echo json_encode($arr);
+											exit;
+						}
+						/*Check Live id*/
+						if($this->m_func->check_token_live($this->input->post('access_token'))){
+							$info_token = $this->m_func->get_info_token($this->input->post('access_token'));
+							if(isset($info_token['id'])){
+								if($info_token['id']  == $this->m_botcmt->get_fbid($id_table)){
+
+									$data_update = array(
+										'name' => $info_token['name'],
+										'access_token' => $this->input->post('access_token'),
+										'check_male' => $this->input->post('check_male'),
+										'check_female' => $this->input->post('check_female'),
+										'check_pg' => $this->input->post('check_pg'),
+										'check_uid' => $this->input->post('check_uid'),
+										'h_start' => $this->input->post('h_start'),
+										'h_end' => $this->input->post('h_end'),
+										'user_creat' => $_SESSION['id'],
+										'note' => $this->input->post('note'),
+										'active' => $this->input->post('active')
+									);
+									$this->db->where('id', $id_table);
+									if($this->db->update('bot_cmt', $data_update)){
+										$this->m_func->tru_tien($thanh_tien, $_SESSION['id']);
+										$arr = array(
+											'type' => 'success',
+											'mess' => 'Cập nhật thành công! Tải lại trang để xem thay đổi'
+										);
+										$time_plus = $this->input->post('gia_han') * 86400;
+										$this->db->query("UPDATE bot_cmt SET time_use = time_use + $time_plus WHERE id = $id_table");
+									}else{
+										$arr = array(
+											'type' => 'warning',
+											'mess' => 'Lỗi'
+										);
+									}
+
+								}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Token không phải của tài khoản này !'
+									);
+								}
+							}
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Token sai hoặc hết hạn'
+							);
+						}
+						
+					}else{
+						$arr = array(
+							'type' => 'warning',
+							'mess' => 'Tài khoản của bạn không đủ để giao dịch'
+						);
+					}
+				}else{
+					$arr = array(
+						'type' => 'warning',
+						'mess' => validation_errors()
+					);
+				}
+				echo json_encode($arr);
+				
+			}
+			exit;
+		}
+		if($this->input->get('edit_cmt') != ''){
+			$id_table = (int)$this->input->get('edit_cmt');
+			if($this->m_func->check_user_creat('bot_cmt', $_SESSION['id'], $id_table)){
+
+				if($this->input->post('delete_comment') != ''){
+					$id_table = (int)$this->input->post('delete_comment');
+					if($this->m_botcmt->check_with_id_cmt($id_table, $_SESSION['id'])){
+						$this->db->where('id', $id_table);
+						if($this->db->delete('comments')){
+							$arr = array(
+								'type' => 'success',
+								'mess' => 'Đã xóa thành công'
+							);
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Lỗi hệ thống'
+							);
+						}
+
+					}else{
+						$arr = array(
+							'type' => 'warning',
+							'mess' => 'Comment này không còn khả dụng'
+						);
+					}
+					echo json_encode($arr);
+					exit;
+				}
+				if($this->input->post('id')){
+					$img = $_FILES['img']; 
+					if($img['name']==''){
+						echo 'error';
+					}else{
+						$filename = $img['tmp_name']; 
+						$client_id="3f9a53bd5ebb2fa"; 
+						//$client_id="cliend_id"; 
+						$handle = fopen($filename, "r"); 
+						$data = fread($handle, filesize($filename)); 
+						$pvars   = array('image' => base64_encode($data)); 
+						$upload_done = $this->m_func->upload_imgur($client_id, $pvars);
+						if($upload_done == false){
+							echo 'error';
+						}else{
+							echo $upload_done;
+						}
+					}
+					exit;
+				}
+
+				$data['result_arr'] = $this->m_botcmt->get_comment($id_table);
+				$data['title'] = 'Chỉnh sửa nội dung cmt';
+				$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+				$data['load'] = 'member/editcmtbot';
+			}else{
+				redirect('/Member/QuanLyBotComment');
+			}
+
+		}else{
+			$data['title'] = 'Quản lý Bot comments';
+			$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+			$data['load'] = 'member/quanlybotcmt';
+			$data['result_arr'] = $this->m_botcmt->get_tuongtac($page);
+			//Pagination Creat
+
+			$this->load->library('pagination');
+	        $config = $this->config->item('pagination'); 
+	        $config['base_url'] = base_url('Member/QuanLyBotComment');
+	        $config['total_rows'] = $this->m_botcmt->num_rows_tuongtac($_SESSION['id']);
+	        $config['per_page'] = 5;                         
+	        
+	        $this->pagination->initialize($config); 
+
+	        $data['pagination'] = $this->pagination->create_links();
+		}
+		
+
+		$this->load->view('layout/member', $data);
+
+
+	}
 	function BotComment(){
 		$this->load->model('m_botcmt');
 		if($this->input->post('done_hihi') != ''){
 			unset($_SESSION['fbid_addcmt']);
 			unset($_SESSION['step_botcmt']);
-			
 		}
 		if($this->input->post('noidung') != ''){
 			if(isset($_SESSION['fbid_addcmt'])){
