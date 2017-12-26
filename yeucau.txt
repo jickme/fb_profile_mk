@@ -24,8 +24,13 @@
 ~ HỆ thống marketing
 	-Tạo lịch đăng bài tự động theo chuẩn thời gian có bảng lịch và thời gian cài đặt ( có thể thêm nhiều lịch )
 	Hỗi trợ đầy đủ như post trên facebook vd: ảnh, stt, video ( có bảng icon facebook để chọn sẵn khi viết tus)
+
 	Hỗ trợ đăng bài lên nhóm và chia sẻ lên nhóm ( Hiển thị sẵn list nhóm đã tham gia )
+
 	-Coppy bài đăng của người khác, có hỗ trơ page. hỗ trợ tùy chỉnh thời gian theo ý muốn, nếu ko điều chỉnh đc thì copy bài mới nhất ( có thể copy nhiều của các nick face khác nhau )
+
+
+	
 	- Ckeck lượt page đã thích ( Có code bỏ thích ) đều xuất được file và xóa nhanh bằng javascrip
 	- Ckeck những người đã theo dõi ( Có code xóa follow ) đều xuất được file và xóa nhanh bằng javascrip
 	- Ckeck id stt bất kỳ để lấy id và kết bạn ( có code kết bạn ) có lựa chọn lọc lấy id nam hoặc nữ và tất cả đều xuất được file và làm nhanh bằng javascrip
@@ -64,7 +69,7 @@ Thêm mục BAN id mà mình muốn chặn không cho tham gia
 Nếu có thể bạn có thể dùng apps login lấy token full quyền và nạp tự động vào hệ thống mỗi khi khách hàng login vào hệ thống. thì hệ thống sẽ tự thêm token mới và xóa token cũ đi
 
 
-
+@[100009126175131:1Nguyễn Minh Trí:] 
 
 ---------------------------------
 Hiển thị thông tin token và cokie còn hoạt động hoặc đã bị chết

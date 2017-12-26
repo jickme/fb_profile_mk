@@ -906,12 +906,124 @@ class Member extends CI_Controller
 		$data['load'] = 'member/auto_cmt';
 		$this->load->view('layout/member', $data);
 	}
+	/*
+	|Auto post bài 
+	*/
+
+	function AutoPost(){
+		$this->load->model('m_autopost');
+		if($this->input->post('access_token') != ''){
+			if($this->m_autopost->form_val_add()){
+				$token = $this->m_func->get_info_token($this->input->post('access_token'));
+				if(isset($token['id'])){
+					if($this->input->post('post_max') > 5){
+						$post = $this->input->post('post_max') - 5;
+					}else{
+						$post = 0;
+					}
+					$thanh_tien = $this->input->post('ngay_cai') * $this->m_func->get_gia('auto_post') + $post * $this->m_func->get_gia('them_post');
+					if($this->m_func->check_money($thanh_tien, $_SESSION['id'])){
+						if($this->m_func->check_isset_db($token['id'], 'auto_post')){
+
+							$data_in = array(
+								'token' => $this->input->post('access_token'),
+								'idfb' => $token['id'],
+								'name' => $token['name'],
+								'post_max' => $this->input->post('post_max'),
+								'posted' => 0,
+								'time_use' => time() + ($this->input->post('ngay_cai') * 86400),
+								'time_creat' => time(),
+								'user_creat' => $_SESSION['id'],
+								'note' => $this->input->post('note')
+							);
+							if($this->db->insert('auto_post', $data_in)){
+									$arr = array(
+										'type' => 'success',
+										'mess' => 'Thêm thành công ! Bạn có thể xem lịch sử giao dịch'
+									);
+									$this->m_func->tru_tien($thanh_tien, $_SESSION['id']);
+								}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Lỗi hệ thống'
+									);
+								}
+
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Người này đã tồn tại trên hệ thống'
+							);
+						}
+
+							//time() + ($this->input->post('ngay_cai') * 86400),
+
+
+					}else{
+						$arr = array(
+							'type' => 'warning',
+							'mess' => 'Tài khoản của bạn ko đủ để giao dịch'
+						);
+					}
+
+				}else{
+					$arr = array(
+						'type' => 'warning',
+						'mess' => 'Token sai hoặc hết hạn'
+					);
+				}
+
+			}else{
+				$arr = array(
+					'type' => 'warning',
+					'mess' => validation_errors()
+				);
+			}
+			echo json_encode($arr);
+			exit;
+
+		}
+		$data['title'] = 'Auto post bài';
+		$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+		$data['load'] = 'member/auto_post';
+		$this->load->view('layout/member', $data);
+	}
+
+	/*
+	|----------------|
+	|Quản lý bài đăng|
+	|----------------|
+	*/
+	function QuanLyBaiDang(){
+		$this->load->model('m_bai');
+		//Get token with facebook id - ajax
+		if($this->input->get('get_token') !=''){
+			$id_table = $this->input->get('get_token');
+			$this->db->where('idfb', $id_table);
+			$this->db->where('user_creat', $_SESSION['id']);
+			$ok = $this->db->get('auto_post');
+			if($ok->num_rows() > 0){
+				$b = $ok->result_array();
+				echo $b[0]['token'];
+			}else{
+				echo 'error';
+			}
+			exit;
+		}
+		$data['list_user'] = $this->m_bai->get_user($_SESSION['id']);
+		$data['title'] = 'Quản lý bài đăng';
+		$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+		$data['load'] = 'member/baidang';
+		$this->load->view('layout/member', $data);
+	}
+	/*
+	|----------------|
+	|Đăng xuất       |
+	|----------------|
+	*/
 	function Logout(){
 		session_destroy();
 		redirect('/Login');
-	}
-	function test(){
-		echo addslashes("'xin chao' ds");	
 	}
 	
 }

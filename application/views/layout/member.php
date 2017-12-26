@@ -35,6 +35,21 @@ if($info['active'] == '1'){
         <link href="<?=base_url()?>assets/plugins/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css" rel="stylesheet">
         <link href="<?=base_url()?>assets/plugins/bootstrap-daterangepicker/daterangepicker.css" rel="stylesheet">
 
+        <?php
+        if(isset($list_user)){
+            ?>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+        <!-- (Optional) Latest compiled and minified JavaScript translation files -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/i18n/defaults-*.min.js"></script>
+
+            <?php
+        }
+        ?>
         <!-- HTML5 Shiv and Respond.js IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -159,15 +174,12 @@ if($info['active'] == '1'){
                                    <li><a href="<?=base_url()?>Member/QuanLyBotComment">Quản lý Auto bình luận</a></li>
                                 </ul>
                             </li>
-                            <li>
-                                <a href="<?=base_url()?>index.php/Admin/PackageManager" class="waves-effect"><i class="fa fa-get-pocket" aria-hidden="true"></i> <span>Quản lý Package </span> </a>
-                            </li>
 
                             <li class="has_sub">
-                                <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-gift" aria-hidden="true"></i> <span> Gif Code</span> <span class="menu-arrow"></span></a>
+                                <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-gift" aria-hidden="true"></i> <span> Auto Post bài</span> <span class="menu-arrow"></span></a>
                                 <ul class="list-unstyled">
-                                    <li><a href="<?=base_url()?>index.php/Admin/GifCodeManager">Quản lý</a></li>
-                                    <li><a href="<?=base_url()?>/index.php/Admin/Log_GifCode">Thống kê gif code</a></li>
+                                    <li><a href="<?=base_url()?>Member/AutoPost">Cài đặt Auto Post </a></li>
+                                    <li><a href="<?=base_url()?>Member/QuanLyBaiDang">Quản lý bài đăng</a></li>
                                 </ul>
                             </li>
 
@@ -226,6 +238,7 @@ if($info['active'] == '1'){
                         <div class="row">
 
                             <?php
+                                 $data['list_user'] = isset($list_user) ? $list_user : '';
                                  $data['result_arr'] = isset($result_arr) ? $result_arr : '';
                                  $data['mess'] = isset($mess) ? $mess : '';
                                  $data['pagination'] = isset($pagination) ? $pagination : '';
@@ -266,6 +279,10 @@ if($info['active'] == '1'){
 
         <!-- jQuery  -->
        
+
+
+
+
         <script src="<?=base_url()?>/assets/js/detect.js"></script>
         <script src="<?=base_url()?>/assets/js/fastclick.js"></script>
         <script src="<?=base_url()?>/assets/js/jquery.slimscroll.js"></script>
@@ -279,15 +296,14 @@ if($info['active'] == '1'){
         <script src="<?=base_url()?>/assets/js/jquery.app.js"></script>
 
         <script src="<?=base_url()?>assets/plugins/toastr/toastr.min.js"></script>
-        <script src="<?=base_url()?>assets/js/main.js"></script>    
+        
         <!-- Time picker -->
         <script src="<?=base_url()?>assets/plugins/timepicker/bootstrap-timepicker.min.js"></script>
 
         <script src="<?=base_url()?>assets/plugins/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
         <script src="<?=base_url()?>assets/plugins/bootstrap-daterangepicker/daterangepicker.js"></script>
-        
-        <script type="text/javascript">
-        </script>
+
+        <script src="<?=base_url()?>assets/js/main.js"></script>    
     </body>
 </html>
 <?php

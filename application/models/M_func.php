@@ -61,7 +61,15 @@ class M_func extends CI_Model
 	    curl_close($ch);
 	    return $page;
 	}
-
+	function check_isset_db($idfb, $where){
+		$this->db->where('idfb', $idfb);
+		$ok = $this->db->get($where);
+		if($ok->num_rows() > 0){
+			return false;
+		}else{
+			return true;
+		}
+	}
 	function upload_imgur($client_id,$pvars, $timeout=30){
 		  $curl = curl_init(); 
 		  curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);  

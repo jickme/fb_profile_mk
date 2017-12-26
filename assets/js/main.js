@@ -31,6 +31,7 @@ $('#ngay_cai').change(function(){
   var thang = $(this).val();
   var per = parseInt($('#per').html());
   $('#tamtinh').html(formatCurrency(thang*per));
+  $('#')
 });
 
 //Submit login form
@@ -237,6 +238,7 @@ $('#auto_tuong_tac_submit').submit(function(){
   });
   return false;
 });
+
 /*Bot comment*/
 $('#add_cmt').click(function(){
   var a = parseInt($('#num_cmt').val()) + 1;
@@ -467,5 +469,151 @@ function add_cmt_submit(){
     }).always(function(){
       $(':input[onclick="add_cmt_submit()"]').prop('disabled', false).html('Lưu thay đổi');
     });
+
+}
+/*$("#post_max").change(function(){
+  var a = $(this).val();
+  if(a > 5){
+    var b = a - 5;
+    
+  }else{
+    var b = 0;
+  }
+    var tien = parseInt($('#per_post').html());
+    var thanhtien = parseInt($('#tamtinh').html()) + (b * tien);
+    $('#tamtinh').html(thanhtien);
+
+});*/
+$('.tinhtien').change(function(){
+  var ngay_cai  = $('#cai_ngay').val();
+  var post_max  = $('#post_max').val();
+  if(post_max > 5){
+    var tien_them = (post_max - 5) * parseInt($('#per_post').html());
+    $('#muathem').html(formatCurrency(tien_them));
+    var post_price = tien_them;
+  }else{
+     $('#muathem').html('0');
+     var post_price = 0;
+  }
+  var day_price = ngay_cai * parseInt($('#per').html());
+  $('#tamtinh').html(formatCurrency(day_price));
+  var tong = post_price + day_price;
+  $('#thanh_tien').html(formatCurrency(tong));
+});
+
+//Custom Selection Plugin
+
+$('.ditmia').selectpicker()
+function click_file(){
+  $('#chose_img').click();
+}
+$('.ditmia').change(function(){
+  var idfb = $(this).val();
+  console.log(idfb);
+  if(idfb == ''){
+  }else{
+    $.get('', {get_token : idfb}).done(function(data){
+      console.log(data);
+     if(data == 'error'){
+      toastr["warning"]("<b>Lỗi khi lấy thông tin người dùng</b>");
+    }else{
+      $('#token').html(data);
+    }
+    }).fail(function(){
+      toastr["warning"]("<b>Lỗi khi lấy thông tin người dùng</b>");
+    });
+  }
+});
+function tag_with_id(id, name){
+  $('#noidung').append('@['+id+':1'+name+':]');
+  $('#tag_fr').modal('hide');
+}
+function addslashes(string) {
+    return string.replace(/\\/g, '\\\\').
+        replace(/\u0008/g, '\\b').
+        replace(/\t/g, '\\t').
+        replace(/\n/g, '\\n').
+        replace(/\f/g, '\\f').
+        replace(/\r/g, '\\r').
+        replace(/'/g, '\\\'').
+        replace(/"/g, '\\"');
+}
+$(function(){
+   jQuery('#timepicker2').timepicker({
+      showMeridian : false,
+        icons: {
+                    up: 'fa fa-chevron-up',
+                    down: 'fa fa-chevron-down'
+        }
+    });
+    jQuery('#datepicker-autoclose').datepicker({
+          autoclose: true,
+          todayHighlight: true
+    });
+});
+
+function search_tag(){
+  var token = $('#token').html();
+  var keyword = $('#key_search').val();
+  $('#view_tag').html('');
+  $('#loader').show();
+  var q = "select uid, name, sex from user where uid in (SELECT uid2 FROM friend WHERE uid1 = me()) and (strpos(lower(name),'"+keyword+"')>=0 OR strpos(name,'"+keyword+"')>=0) ORDER BY rand() LIMIT 500";
+  $.getJSON('https://graph.facebook.com/fql', {q: q, access_token: token}).done(function(a){
+    //console.log(a);
+     $.each( a.data, function( key, value ) {
+        console.log(value);
+        $('#view_tag').append('<div class="col-md-6 col-sm-12 col-xs-12"> <div class="panel panel-info"> <div class="panel-heading"><center><img src="https://graph.fb.me/'+value.uid+'/picture?width=70&height=70" width="70" height="70" class="img-circle img-thumbnail img-responsive"><br><h5 style="color: white;"><a class="text-white" href="https://fb.com/'+value.uid+'" target="_blank">'+value.name+'</a></h5> <button class="btn btn-success btn-sm" onclick="tag_with_id('+value.uid+', \''+addslashes(value.name)+'\')">Tag</button> </center></div></div></div>');
+     });
+     $('#loader').hide();
+  }).fail(function(){
+    $('#loader').hide();
+    toastr["warning"]("<b>Lỗi khi lấy thông tin người dùng</b>");
+  });
+}
+function rand_icon_post(){
+  $('#noidung').append('{{r}}');
+}
+$('#where_post').change(function(){
+  var a = $(this).val();
+  if(a == 'profile'){
+    $('#profile').show();
+    $('#group').hide();
+    $('#copy').hide();
+  }
+  if(a == 'group'){
+    $('#profile').show();
+    $('#group').show();
+    $('#copy').hide();
+  }
+  if(a == 'copy'){
+    $('#profile').hide();
+    $('#group').hide();
+    $('#copy').show();
+  }
+});
+//Search Group
+function group_search(){
+    var token = $('#token').html();
+    $('#view_group').html('');
+    $('#loadergr').show();
+    $.post('https://graph.facebook.com/?method=post&access_token='+token+'&batch=[{"method":"GET","relative_url":"me"},+{"method":"GET","relative_url":"me/groups?fields=icon,administrator,name%26limit=5000"}]&include_headers=false').done(function(a){
+     
+     var b = jQuery.parseJSON(a[1]['body']);
+     console.log(b);
+   
+       $.each( b.data, function( key, value ) {
+          console.log(value);
+          $('#view_group').append(' <li class="list-group-item"><img src="'+value.icon+'"> <a href="https://facebook.com/'+value.id+'" target="_blank">'+value.name+'</a>   <button class="btn btn-info btn-xs" onclick="nhom_ins('+value.id+')">Chọn</button></li>');
+       });
+       $('#loadergr').hide();
+    }).fail(function(){
+      $('#loadergr').hide();
+      toastr["warning"]("<b>Lỗi khi lấy thông tin người dùng</b>");
+    });
+}
+//Chose
+function nhom_ins(id){
+  $(':button[onclick="nhom_ins('+id+')"]').prop('disabled', true).html('Đã chọn').removeClass('btn-info').addClass('btn-default');
+  $('#id_gr_ins').append(id+';');
 
 }
