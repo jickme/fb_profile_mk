@@ -14,7 +14,7 @@
                     <div class="form-group">
                         <label class="col-md-2 control-label">Người đăng :</label>
                         <div class="col-md-10">
-                                <select name="nguoi_dang" class="form-control ditmia" data-live-search="true">
+                                <select name="idfb" class="form-control ditmia" data-live-search="true" required="">
                                     <?php
 
                                         foreach ($list_user as $user) {
@@ -35,7 +35,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">Nội dung bài đăng </label>
                                 <div class="col-md-10">
-                                    <textarea class="form-control" placeholder="Nội dung đăng bài vào đây..." name="noidung" id="noidung"></textarea>
+                                    <textarea class="form-control" placeholder="Nội dung đăng bài vào đây..." name="message" id="noidung"></textarea>
 
                                           <ul class="nav nav-pills m-t-10">
                                                     <li>
@@ -71,7 +71,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">ID Nhóm</label>
                                 <div class="col-md-10">
-                                    <textarea class="form-control" placeholder="Dán id nhóm vào đây..." name="group_list" id="id_gr_ins"></textarea>  
+                                    <textarea class="form-control" placeholder="Dán id nhóm vào đây..." id="id_gr_ins" name="list_id_group"></textarea>  
                                     <span class="text-muted">* Click <a href="#" data-toggle="modal" data-target="#group_search">vào đây</a> để tìm kiếm và lấy id nhóm.</span>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@
                             <div class="form-group">
                                 <label class="col-md-2 control-label">List UID Copy</label>
                                 <div class="col-md-10">
-                                    <textarea class="form-control" placeholder="List UID copy bài viết, cách nhau bằng dấu xuống dòng." name="list_copy" id="list_copy" rows="8"></textarea>  
+                                    <textarea class="form-control" placeholder="List UID copy bài viết, cách nhau bằng dấu xuống dòng." name="list_id_copy" id="list_copy" rows="8"></textarea>  
                                     <span class="text-muted">* Copy được trang cá nhân, page, nhóm.</span>
                                 </div>
                             </div>
@@ -96,8 +96,7 @@
                             <div class="form-group">
                                 <label class="col-md-12 control-label">Giờ post bài</label>
                                 <div class="col-md-12">
-                                    <input id="timepicker2" type="text" class="form-control">
-                                            
+                                    <input id="timepicker2" type="text" class="form-control" name="gio" required="">        
                                 </div>
                             </div>
                         </div> 
@@ -105,7 +104,7 @@
                             <div class="form-group">
                                 <label class="col-md-12 control-label">Ngày post bài</label>
                                 <div class="col-md-12">
-                                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="datepicker-autoclose">
+                                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="datepicker-autoclose" name="ngay" required="">
                                             
                                 </div>
                             </div>
@@ -116,8 +115,8 @@
                             <div class="form-group">
                                 <label class="col-md-12 control-label">Đăng lại sau (phút): </label>
                                 <div class="col-md-12">
-                                    <input type="number" class="form-control" value="60" name="repeat">
-                                            
+                                    <input type="number" class="form-control" value="0" name="time_repeat">
+                                    <span class="text-muted">* Điền 0 để chỉ đăng 1 lần.</span>      
                                 </div>
                             </div>
                            
@@ -145,7 +144,7 @@
                     
                 
 
-                    <button type="submit" class="btn btn-primary waves-effect w-md waves-light m-b-5">Tiến hành cài đặt</button>
+                    <button type="submit" class="btn btn-primary waves-effect w-md waves-light m-b-5" id="su_f">Tiến hành cài đặt</button>
                 </div>
 
             </form>

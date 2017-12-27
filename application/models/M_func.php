@@ -8,6 +8,11 @@ class M_func extends CI_Model
 	{
 		parent::__construct();
 	}
+	function convert_day_to_mktime($h, $d){
+		$h_arr = explode(':', $h);
+		$d_arr = explode('/', $d);
+		return mktime($h_arr[0],$h_arr[1],0,$d_arr[0],$d_arr[1],$d_arr[2]);
+	}
 	function graph_fb($url){
 	    $ch = @curl_init();
 	    curl_setopt($ch, CURLOPT_URL, 'https://graph.facebook.com/'.$url.'');
@@ -130,7 +135,6 @@ class M_func extends CI_Model
 		return $this->db->query("UPDATE member SET money = money -$tien WHERE id = $id");
 
 	}
-	
 	public function timeAgo($time_ago){
 		  $cur_time 	= time();
 		  $time_elapsed = $cur_time - $time_ago;
@@ -261,5 +265,44 @@ class M_func extends CI_Model
 				return 'RANDOM';
 				break;
 		}
+	}
+	function strMiddleReduceWordSensitive($string, $max = 50, $rep = '[...]') {
+		   $strlen = strlen($string);
+		    
+		    if ($strlen <= $max)
+		    return $string;
+		     
+		   $lengthtokeep=$max - strlen($rep);
+		   $start = 0;
+		   $end = 0;
+		     
+		    if (($lengthtokeep % 2) == 0) {
+		       $start = $lengthtokeep / 2;
+		       $end = $start;
+		   } else {
+		       $start = intval($lengthtokeep / 2)+2;
+		       $end = $start - 5;
+		   }
+		   $i = $start;
+		   $tmp_string = $string;
+		   while ($i < $strlen) {
+		       if (isset($tmp_string[$i]) and $tmp_string[$i] == ' ') {
+		           $tmp_string = mb_substr($tmp_string, 0, $i,'UTF-8') . $rep;
+		           $return = $tmp_string;
+		       }
+		       $i++;
+		   }
+		    
+		   $i = $end;
+		   $tmp_string = strrev ($string);
+		   while ($i < $strlen) {
+		       if (isset($tmp_string[$i]) and $tmp_string[$i] == ' ') {
+		           $tmp_string = mb_substr($tmp_string, 0, $i,'UTF-8');
+		           $return .= strrev ($tmp_string);
+		       }
+		       $i++;
+		   }
+		   if(isset($return)) return $return;
+		   return mb_substr($string, 0, $start,'UTF-8') . $rep . mb_substr($string, - $end,'UTF-8');
 	}
 }

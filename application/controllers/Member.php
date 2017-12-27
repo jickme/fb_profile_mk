@@ -243,7 +243,6 @@ class Member extends CI_Controller
         $data['pagination'] = $this->pagination->create_links();
 
 		$this->load->view('layout/member', $data);
-
 	}
 	function TreoNick(){
 		$this->load->model('m_treonick');
@@ -748,9 +747,12 @@ class Member extends CI_Controller
 		
 
 		$this->load->view('layout/member', $data);
-
-
 	}
+	/*
+	|-------------------|
+	|Cài đặt bot comment|
+	|-------------------|
+	*/
 	function BotComment(){
 		$this->load->model('m_botcmt');
 		if($this->input->post('done_hihi') != ''){
@@ -907,9 +909,10 @@ class Member extends CI_Controller
 		$this->load->view('layout/member', $data);
 	}
 	/*
-	|Auto post bài 
+	|-----------------|
+	|Cài đặt auto post|
+	|-----------------|
 	*/
-
 	function AutoPost(){
 		$this->load->model('m_autopost');
 		if($this->input->post('access_token') != ''){
@@ -934,7 +937,8 @@ class Member extends CI_Controller
 								'time_use' => time() + ($this->input->post('ngay_cai') * 86400),
 								'time_creat' => time(),
 								'user_creat' => $_SESSION['id'],
-								'note' => $this->input->post('note')
+								'note' => $this->input->post('note'),
+								'active' => 1
 							);
 							if($this->db->insert('auto_post', $data_in)){
 									$arr = array(
@@ -988,32 +992,447 @@ class Member extends CI_Controller
 		$data['load'] = 'member/auto_post';
 		$this->load->view('layout/member', $data);
 	}
+	/*
+	|-----------------|
+	|Quản lý auto post|
+	|-----------------|
+	*/
+	function QuanLyAutoPost(){
+		$this->load->model('m_autopost');
+		//Delete Table
+		if($this->input->post('delete_table') != ''){
+			$id_table = $this->input->post('delete_table');
+			settype($id_table, 'int');
+			if($this->m_func->check_user_creat('auto_post', $_SESSION['id'], $id_table)){
+				$this->db->where('id', $id_table);
+				if($this->db->delete('auto_post')){
+							$arr = array(
+								'type' => 'success',
+								'mess' => 'Đã xóa thành công'
+							);
+				}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Không thể xóa id này do lỗi'
+							);
+				}
 
+			}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Bạn không thể xóa id của người khác'
+							);
+			}
+			echo json_encode($arr);
+			exit;
+		}
+		//Get edit json
+		if($this->input->post('get_json_edit') != ''){
+			$id_table = $this->input->post('get_json_edit');
+			settype($id_table, 'int');
+			if($this->m_func->check_user_creat('auto_post', $_SESSION['id'], $id_table)){
+				$this->db->where('id', $id_table);
+				$ok = $this->db->get('auto_post');
+				$hi = $ok->result_array();
+				echo json_encode($hi[0]);
+				exit;
+			}
+		}
+		//edit id submit
+		if($this->input->post('edit_id') != ''){
+			$id_table = $this->input->post('edit_id');settype($id_table, 'int');
+			if($this->m_func->check_user_creat('auto_post', $_SESSION['id'], $id_table)){
+				if($this->m_autopost->form_val_edit()){
+					$thanh_tien = $this->input->post('gia_han') * $this->m_func->get_gia('auto_post') + $this->input->post('post_them') * $this->m_func->get_gia('them_post');
+					if($this->m_func->check_money($thanh_tien, $_SESSION['id'])){
+						if($this->m_func->check_token_live($this->input->post('token'))){
+
+							$info_token = $this->m_func->get_info_token($this->input->post('token'));
+							if($info_token['id'] == $this->m_autopost->get_fbid($id_table)){
+								$db_update = array(
+									'token' => $this->input->post('token'),
+									'name' => $info_token['name'],
+									'note' => $this->input->post('note'),
+									'active' => $this->input->post('active')
+								);
+								$this->db->where('id',$id_table);
+								if($this->db->update('auto_post', $db_update)){
+										$this->m_func->tru_tien($thanh_tien, $_SESSION['id']);
+										$arr = array(
+											'type' => 'success',
+											'mess' => 'Cập nhật thành công! Tải lại trang để xem thay đổi'
+										);
+										$time_plus = $this->input->post('gia_han') * 86400;
+										$post_plus = $this->input->post('post_them');
+										$this->db->query("UPDATE auto_post SET time_use = time_use + $time_plus, post_max = post_max + $post_plus WHERE id = $id_table");
+								}else{
+										$arr = array(
+											'type' => 'warning',
+											'mess' => 'Lỗi'
+										);
+								}
+
+							}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Token không phải của tài khoản này !'
+									);
+							}
+
+
+						}else{
+							$arr = array(
+								'type' => 'warning',
+								'mess' => 'Token sai hoặc hết hạn'
+							);
+						}
+					}else{
+						$arr = array(
+							'type' => 'warning',
+							'mess' => 'Tài khoản của bạn không đủ để giao dịch'
+						);
+					}
+				}else{
+					$arr = array(
+						'type' => 'warning',
+						'mess' => validation_errors()
+					);
+				}
+			}
+			echo json_encode($arr);
+			exit;
+		}
+		//main view
+		
+		$data['result_arr'] = $this->m_autopost->get_data_auto_post($_SESSION['id']);
+		$data['title'] = 'Quản lý Auto Post bài';
+		$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+		$data['load'] = 'member/quanly_auto_post';
+		$this->load->view('layout/member', $data);
+
+	}
 	/*
 	|----------------|
 	|Quản lý bài đăng|
 	|----------------|
 	*/
-	function QuanLyBaiDang(){
+	function QuanLyBaiDang($action = ''){
 		$this->load->model('m_bai');
-		//Get token with facebook id - ajax
-		if($this->input->get('get_token') !=''){
-			$id_table = $this->input->get('get_token');
-			$this->db->where('idfb', $id_table);
-			$this->db->where('user_creat', $_SESSION['id']);
-			$ok = $this->db->get('auto_post');
-			if($ok->num_rows() > 0){
-				$b = $ok->result_array();
-				echo $b[0]['token'];
-			}else{
-				echo 'error';
+		if($action == ''){
+			//Get token with facebook id - ajax
+			if($this->input->get('get_token') !=''){
+				$id_table = $this->input->get('get_token');
+				$this->db->where('idfb', $id_table);
+				$this->db->where('user_creat', $_SESSION['id']);
+				$ok = $this->db->get('auto_post');
+				if($ok->num_rows() > 0){
+					$b = $ok->result_array();
+					echo $b[0]['token'];
+				}else{
+					echo 'error';
+				}
+				exit;
 			}
-			exit;
+			if($this->input->post('idfb') !=''){
+				if($this->m_bai->get_id_from_uid($this->input->post('idfb'), $_SESSION['id']) == false){
+					exit;
+				}
+				switch ($this->input->post('where_post')) {
+					case 'profile':
+					if($_FILES['image']['name'] == '' AND $this->input->post('message') == ''){
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Thiếu trường ảnh kèm theo hoặc nội dung đăng bài'
+												);	
+												echo json_encode($arr); 
+												exit;
+					}
+						if($this->m_bai->val_form('profile') == true){
+								$time_post = $this->m_func->convert_day_to_mktime($this->input->post('gio'), $this->input->post('ngay'));
+								if(time() < $time_post){
+									//Upload image to imgur
+									if(isset($_FILES['image'])){
+										$img = $_FILES['image']; 
+										if($img['name']!=''){
+											$filename = $img['tmp_name']; 
+											$client_id="3f9a53bd5ebb2fa"; 
+											$handle = fopen($filename, "r"); 
+											$data = fread($handle, filesize($filename)); 
+											$pvars   = array('image' => base64_encode($data)); 
+											$upload_done = $this->m_func->upload_imgur($client_id, $pvars);
+											if($upload_done == false){
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Lỗi khi tải ảnh lên'
+												);	
+												echo json_encode($arr); 
+												exit;
+											}else{
+												$image = $upload_done;
+											}
+										}else{
+											$image = '';
+										}
+									}else{
+										$image = '';
+									}
+									if($this->m_bai->row_fbid($this->input->post('idfb')) <= 5){
+										//start insert
+										$array_insert = array(
+											'idfb' => $this->input->post('idfb'),
+											'where_post' => $this->input->post('where_post'),
+											'message' => $this->input->post('message'),
+											'image' => $image,
+											'list_id_group' => '',
+											'list_id_copy' => '',
+											'time_post' => $time_post,
+											'time_repeat' => $this->input->post('message') * 60,
+											'time_creat' => time(),
+											'user_creat' => $_SESSION['id']
+										);
+										if($this->db->insert('posts', $array_insert)){
+												$arr = array(
+													'type' => 'success',
+													'mess' => 'Thêm post thành công !'
+												);	
+										}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Lỗi hệ thống'
+												);	
+										}
+									}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Bạn chỉ có thể thêm tối đa 5 mẫu bài đăng cho 1 IDFB'
+												);	
+									}
+									
+
+									
+
+								}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Vui lòng chọn thời gian lớn hơn thời điểm hiện tại'
+									);	
+								}
+
+						}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => validation_errors()
+								);
+						}
+						echo json_encode($arr);exit;
+						break;
+					case 'group':
+					if($_FILES['image']['name'] == '' AND $this->input->post('message') == ''){
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Thiếu trường ảnh kèm theo hoặc nội dung đăng bài'
+												);	
+												echo json_encode($arr); 
+												exit;
+					}
+						if($this->m_bai->val_form('group') == true){
+								$time_post = $this->m_func->convert_day_to_mktime($this->input->post('gio'), $this->input->post('ngay'));
+								if(time() < $time_post){
+									//Upload image to imgur
+									if(isset($_FILES['image'])){
+										$img = $_FILES['image']; 
+										if($img['name']!=''){
+											$filename = $img['tmp_name']; 
+											$client_id="3f9a53bd5ebb2fa"; 
+											$handle = fopen($filename, "r"); 
+											$data = fread($handle, filesize($filename)); 
+											$pvars   = array('image' => base64_encode($data)); 
+											$upload_done = $this->m_func->upload_imgur($client_id, $pvars);
+											if($upload_done == false){
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Lỗi khi tải ảnh lên'
+												);	
+												echo json_encode($arr); 
+												exit;
+											}else{
+												$image = $upload_done;
+											}
+										}else{
+											$image = '';
+										}
+									}else{
+										$image = '';
+									}
+									if($this->m_bai->row_fbid($this->input->post('idfb')) <= 5){
+										//start insert
+										$array_insert = array(
+											'idfb' => $this->input->post('idfb'),
+											'where_post' => $this->input->post('where_post'),
+											'message' => $this->input->post('message'),
+											'image' => $image,
+											'list_id_group' => $this->input->post('list_id_group'),
+											'list_id_copy' => '',
+											'time_post' => $time_post,
+											'time_repeat' => $this->input->post('message') * 60,
+											'time_creat' => time(),
+											'user_creat' => $_SESSION['id']
+										);
+										if($this->db->insert('posts', $array_insert)){
+												$arr = array(
+													'type' => 'success',
+													'mess' => 'Thêm bài viết thành công ! Group sẽ được random để đăng lên'
+												);	
+										}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Lỗi hệ thống'
+												);	
+										}
+									}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Bạn chỉ có thể thêm tối đa 5 mẫu bài đăng cho 1 IDFB'
+												);	
+									}
+									
+								}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Vui lòng chọn thời gian lớn hơn thời điểm hiện tại'
+									);	
+								}
+
+						}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => validation_errors()
+								);
+						}
+						echo json_encode($arr);
+						exit;
+
+						break;
+					case 'copy':
+						if($this->m_bai->val_form('copy') == true){
+								$time_post = $this->m_func->convert_day_to_mktime($this->input->post('gio'), $this->input->post('ngay'));
+								if(time() < $time_post){
+									
+									if($this->m_bai->row_fbid($this->input->post('idfb')) <= 5){
+										//start insert
+										$array_insert = array(
+											'idfb' => $this->input->post('idfb'),
+											'where_post' => $this->input->post('where_post'),
+											'message' => '',
+											'image' => '',
+											'list_id_group' => '',
+											'list_id_copy' => $this->input->post('list_id_copy'),
+											'time_post' => $time_post,
+											'time_repeat' => $this->input->post('message') * 60,
+											'time_creat' => time(),
+											'user_creat' => $_SESSION['id'],
+											'posted' => 0
+										);
+										if($this->db->insert('posts', $array_insert)){
+												$arr = array(
+													'type' => 'success',
+													'mess' => 'Thêm bài viết thành công ! Sẽ lấy bài viết mới nhất của list uid này'
+												);	
+										}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Lỗi hệ thống'
+												);	
+										}
+									}else{
+												$arr = array(
+													'type' => 'warning',
+													'mess' => 'Bạn chỉ có thể thêm tối đa 5 mẫu bài đăng cho 1 IDFB'
+												);	
+									}
+									
+								}else{
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Vui lòng chọn thời gian lớn hơn thời điểm hiện tại'
+									);	
+								}
+
+						}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => validation_errors()
+								);
+						}
+						echo json_encode($arr);
+						exit;
+						break;
+						default:
+									$arr = array(
+										'type' => 'warning',
+										'mess' => 'Không xác định được hành động'
+									);
+						echo json_encode($arr);
+						exit;
+
+						break;
+				}
+				//echo $this->m_func->convert_day_to_mktime($this->input->post('gio'), $this->input->post('ngay'));
+
+				//echo json_encode($arr);
+
+						exit;
+			}
+			$data['list_user'] = $this->m_bai->get_user($_SESSION['id']);
+			$data['title'] = 'Quản lý bài đăng';
+			$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+			$data['load'] = 'member/baidang';
+		}else{
+			if($this->input->post('delete_table') != ''){
+				$id_table = $this->input->post('delete_table');
+				settype($id_table, 'int');
+				if($this->m_func->check_user_creat('posts', $_SESSION['id'], $id_table)){
+					$this->db->where('id', $id_table);
+					if($this->db->delete('posts')){
+								$arr = array(
+									'type' => 'success',
+									'mess' => 'Đã xóa thành công'
+								);
+					}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => 'Không thể xóa id này do lỗi'
+								);
+					}
+
+				}else{
+								$arr = array(
+									'type' => 'warning',
+									'mess' => 'Bạn không thể xóa id của người khác'
+								);
+				}
+				echo json_encode($arr);
+				exit;
+			}
+
+			if($this->input->post('get_json_edit') != ''){
+				$id_table = $this->input->post('get_json_edit');
+				settype($id_table, 'int');
+				if($this->m_func->check_user_creat('posts', $_SESSION['id'], $id_table)){
+					$this->db->where('id', $id_table);
+					$ok = $this->db->get('posts');
+					$hi = $ok->result_array();
+					echo json_encode($hi[0]);
+					exit;
+				}
+			}
+
+			$data['result_arr'] = $this->m_bai->get_all_post($_SESSION['id']);
+			$data['title'] = 'Tất cả bài đăng';
+			$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
+			$data['load'] = 'member/quanlybaidang';
 		}
-		$data['list_user'] = $this->m_bai->get_user($_SESSION['id']);
-		$data['title'] = 'Quản lý bài đăng';
-		$data['info'] = $this->m_member->get_info($this->session->userdata('id'));
-		$data['load'] = 'member/baidang';
+
 		$this->load->view('layout/member', $data);
 	}
 	/*

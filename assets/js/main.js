@@ -615,5 +615,77 @@ function group_search(){
 function nhom_ins(id){
   $(':button[onclick="nhom_ins('+id+')"]').prop('disabled', true).html('Đã chọn').removeClass('btn-info').addClass('btn-default');
   $('#id_gr_ins').append(id+';');
+}
 
+//Submit Form creat_post_default
+$("#creat_post_default").on('submit',(function(e){
+    e.preventDefault();
+    $.ajax({
+      url: "",
+      type: "POST",
+      data:  new FormData(this),
+      contentType: false,
+      cache: false,
+      processData: false,
+      success: function(data){
+        var a = jQuery.parseJSON(data);
+        toastr[a.type](a.mess);
+        if(a.type == 'success'){
+          setTimeout(function(){
+            location.reload();
+          }, 1000);
+        }
+      },
+      error: function(){
+        toastr["warning"]("<b>Lỗi hệ thống</b>");
+      },
+      complete: function(){
+        $(':button[type="submit"]').prop('disabled', false).html('Tiến hành cài đặt'); 
+        $('.loader').hide();
+      }, beforeSend: function(){
+        $(':button[type="submit"]').prop('disabled', true).html('<i class="fa fa-spinner fa-spin fa-fw"></i> Đang tiến hành cài đặt...');
+        $('.loader').show();
+      }        
+    });
+}));
+//Edit Auto Post Manager
+function edit_post_manager(id){
+  $('.loader').show();
+  $(':input[onclick="edit_post_manager('+id+')"]').prop('disabled', true);
+  $.post('', {get_json_edit: id}).done(function(data){
+      var a = jQuery.parseJSON(data);
+      if(a.active == 1){
+        var active = '<option value="1" selected>Hoạt động</option> <option value="0">Tạm ngưng</option>';
+      }else{
+        var active = '<option value="1">Hoạt động</option> <option value="0" selected>Tạm ngưng</option>';
+      }
+      $('#trideptrai').html('<div id="edit_model" class="modal fade" role="dialog"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal">&times;</button> <h4 class="modal-title">Chỉnh sửa</h4> </div><div class="modal-body"> <form id="form_edit"> <input type="hidden" name="edit_id" value="'+a.id+'"> <div class="row"> <p class="text-center text-info"><b>Thông tin chính</b> </p><div class="col-md-6"> <div class="form-group no-margin"> <label for="field-7" class="control-label">Acccess Token</label> <textarea class="form-control autogrow" id="field-7" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 80px;" name="token">'+a.token+'</textarea> </div></div><div class="col-md-6"> <div class="form-group no-margin"> <label for="field-7" class="control-label">Ghi chú</label> <textarea class="form-control autogrow" id="field-7" style="overflow: hidden; word-wrap: break-word; resize: horizontal; height: 80px;" name="note">'+a.note+'</textarea> </div></div><div class="row"> <div class="col-md-4"> <div class="form-group no-margin"> <label for="sel1">Trạng thái:</label> <select class="form-control" id="sel1" name="active">'+active+'</select> </div></div><did class="col-md-4"> <div class="form-group"> <label class="control-label">Post mua thêm : </label> <div> <input type="number" name="post_them" class="form-control" value="0"> </div></div></did> <div class="col-md-4"> <div class="form-group no-margin"> <label for="field-2" class="control-label">Gia hạn</label> <input class="form-control" id="field-2" type="number" name="gia_han" placeholder="Điền 0 để ko gia hạn." value="0" min="0" step="1"> <small class="text-muted">* Số ngày mua thên, điền 0 nếu ko muốn gia hạn.</small> </div></div></div></div></form> </div><div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button> <button type="submit" class="btn btn-info waves-effect waves-light" onclick="submit_form_modal()">Lưu thay đổi</button> </div></div></div></div>');
+      $('#edit_model').modal('show');
+      $('.loader').hide();
+    }).fail(function(){
+       $('.loader').hide();
+       toastr["warning"]("<b>Lỗi không thể xem</b>");
+  }).always(function(){
+    $(':input[onclick="edit_post_manager('+id+')"]').prop('disabled', false);
+  });
+}
+function view_full(id){
+  $(':button[onclick="view_full('+id+')"]').prop('disabled', true);
+  $.post('', {get_json_edit: id}).done(function(data){
+    var a = jQuery.parseJSON(data);
+    console.log(a);
+    if(a.where_post == 'profile'){
+      var content = ' <label> * Nội dung</label> <textarea class="form-control" rows="5" placeholder="Không có nội dung" disabled="">'+a.message+'</textarea><br><label> * Ảnh kèm theo</label><br><img src="'+a.image+'" width="200"/><br>';
+    }else if(a.where_post == 'group'){
+       var content = ' <label> * Nội dung</label> <textarea class="form-control" rows="5" placeholder="Không có nội dung" disabled="">'+a.message+'</textarea><br><label> * Nhóm</label> <textarea class="form-control" rows="5" disabled="">'+a.list_id_group+'</textarea><br><label> * Ảnh kèm theo</label><br><img src="'+a.image+'" width="200" alt="Không có ảnh"/><br>';
+    }else{
+      var content = '<label> * Copy bài uid</label> <textarea class="form-control" rows="5" disabled="">'+a.list_id_copy+'</textarea><br>';
+    }
+    $('#trideptrai').html('<div id="view_full" class="modal fade" role="dialog"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <button type="button" class="close" data-dismiss="modal">&times;</button> <h4 class="modal-title">Bài đăng</h4> </div><div class="modal-body">'+content+'</div><div class="modal-footer"> <button type="button" class="btn btn-default" data-dismiss="modal">Đóng</button> </div></div></div></div>');
+    $(':button[onclick="view_full('+id+')"]').prop('disabled', false);
+    $('#view_full').modal('show');
+  }).fail(function(){
+     toastr["warning"]("<b>Lỗi hệ thống !</b>");
+     $(':button[onclick="view_full('+id+')"]').prop('disabled', false);
+  });
 }

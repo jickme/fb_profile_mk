@@ -179,6 +179,7 @@ if($info['active'] == '1'){
                                 <a href="javascript:void(0);" class="waves-effect"><i class="fa fa-gift" aria-hidden="true"></i> <span> Auto Post bài</span> <span class="menu-arrow"></span></a>
                                 <ul class="list-unstyled">
                                     <li><a href="<?=base_url()?>Member/AutoPost">Cài đặt Auto Post </a></li>
+                                    <li><a href="<?=base_url()?>Member/QuanLyAutoPost">Quản lý Auto Post </a></li>
                                     <li><a href="<?=base_url()?>Member/QuanLyBaiDang">Quản lý bài đăng</a></li>
                                 </ul>
                             </li>
